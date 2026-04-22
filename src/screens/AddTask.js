@@ -1,36 +1,34 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-const AddTask = ({ navigation }) => { 
+const AddTask = ({ navigation, addTask }) => { 
+  const [text, setText] = useState(''); // Lokalni state za ono što kucaš
+
+  const handleSave = () => {
+    if (text.length > 0) {
+      addTask(text); // Pozivamo funkciju iz App.js
+      setText('');   // Čistimo polje
+      navigation.navigate('Tasks'); // Vraćamo se na listu
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Add Task</Text>
+      <Text style={styles.header}>New Task</Text>
 
-      {/* Task button */}
+      <TextInput
+        style={styles.input}
+        placeholder="What do you want to do?"
+        value={text}
+        onChangeText={(val) => setText(val)}
+      />
 
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Tasks')}
-      >
-        <Text style={styles.buttonText}>Tasks</Text>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Task</Text>
       </TouchableOpacity>
 
-      {/* AddTask button */}
-
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Timer')}
-      >
-        <Text style={styles.buttonText}>Timer</Text>
-      </TouchableOpacity>
-
-      {/* Timer button */}
-
-      <TouchableOpacity 
-        style={styles.button} 
-        onPress={() => navigation.navigate('Home')}
-      >
-        <Text style={styles.buttonText}>Home</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Text style={styles.backText}>Go Back</Text>
       </TouchableOpacity>
     </View>
   );
@@ -39,25 +37,39 @@ const AddTask = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 30,
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#fff',
   },
-  text: {
-    fontSize: 48,
+  header: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  input: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#007AFF',
+    fontSize: 20,
+    paddingVertical: 10,
+    marginBottom: 30,
+  },
+  saveButton: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    marginBottom: 15,
-    borderRadius: 8,
-  },
-  buttonText: {
+  saveButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  backText: {
+    color: '#888',
+    textAlign: 'center',
+    fontSize: 16,
   }
 });
 
