@@ -4,50 +4,60 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainStackNavigator from './src/navigation/StackNavigator';
 
 export default function App() {
-  const [tasks, setTasks] = useState([]); 
+  const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const savedTasks = await AsyncStorage.getItem('@my_project_tasks');
+        const savedTasks = await AsyncStorage.getItem('@task_data');
         if (savedTasks !== null) {
-
           setTasks(JSON.parse(savedTasks));
         }
       } catch (e) {
-        console.error("Failed to load tasks:", e);
+        console.error("Failed to load tasks", e);
       }
     };
-
     loadTasks();
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const saveTasks = async () => {
       try {
-
         const jsonValue = JSON.stringify(tasks);
-        await AsyncStorage.setItem('@my_project_tasks', jsonValue);
+        await AsyncStorage.setItem('@task_data', jsonValue);
       } catch (e) {
-        console.error("Failed to save tasks:", e);
+        console.error("Failed to save tasks", e);
       }
     };
+    saveTasks();
+  }, [tasks]);
 
+  // Add
+  const addTask = (text, Date) => {
+    const newTask = { id: Math.random().toString(), title: text, dueDate: Date, completed: false };
+    setTasks([...tasks, newTask]);
+  };
 
-    if (tasks.length > 0) {
-      saveTasks();
-    }
-  }, [tasks]); 
+  // Delete
+  const deleteTask = (id) => {
+    setTasks(tasks.filter(task => task.id !== id));
+  };
 
-
-  const addTask = (text) => {
-    const newEntry = { id: Math.random().toString(), title: text };
-    setTasks([...tasks, newEntry]);
+  // Update 
+  const toggleTaskStatus = (id) => {
+    setTasks(tasks.map(task => 
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
   };
 
   return (
     <NavigationContainer>
-      <MainStackNavigator tasks={tasks} addTask={addTask} />
+      <MainStackNavigator 
+        tasks={tasks} 
+        addTask={addTask} 
+        deleteTask={deleteTask} 
+        toggleTaskStatus={toggleTaskStatus} 
+      />
     </NavigationContainer>
   );
 }

@@ -1,29 +1,43 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
-// Primamo 'tasks' koje smo poslali iz StackNavigatora
-const Tasks = ({ navigation, tasks }) => { 
+const Tasks = ({ navigation, tasks, deleteTask, toggleTaskStatus }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>My Tasks</Text>
 
-      {/* FlatList je najbolji način za prikazivanje listi u React Native-u */}
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.taskCard}>
-            <Text style={styles.taskText}>{item.title}</Text>
+            {/* Click to Toggle Status */}
+            <TouchableOpacity 
+              style={styles.textContainer} 
+              onPress={() => toggleTaskStatus(item.id)}
+            >
+              <Text style={[
+                styles.taskText, 
+                item.completed && styles.completedText
+              ]}>
+                {item.title}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Click to Delete */}
+            <TouchableOpacity onPress={() => deleteTask(item.id)}>
+              <Text style={styles.deleteButton}>✕</Text>
+            </TouchableOpacity>
           </View>
         )}
-        style={styles.list}
       />
 
+      {/* Floating Action Button for Adding */}
       <TouchableOpacity 
-        style={styles.floatingButton} 
+        style={styles.fab} 
         onPress={() => navigation.navigate('AddTask')}
       >
-        <Text style={styles.buttonText}>+</Text>
+        <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </View>
   );
@@ -32,36 +46,48 @@ const Tasks = ({ navigation, tasks }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
-    paddingTop: 60,
+    backgroundColor: '#f5f5f5',
+    paddingTop: 50,
   },
   header: {
-    fontSize: 48,
+    fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
   },
-  list: {
-    width: '100%',
-  },
   taskCard: {
+    flexDirection: 'row',
     backgroundColor: '#fff',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 12,
-    elevation: 2, // Sjena za Android
-    shadowColor: '#000', // Sjena za iOS
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
+  },
+  textContainer: {
+    flex: 1,
   },
   taskText: {
     fontSize: 18,
     color: '#333',
   },
-  floatingButton: {
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: '#aaa',
+  },
+  deleteButton: {
+    color: '#FF3B30',
+    fontSize: 22,
+    fontWeight: 'bold',
+    paddingLeft: 10,
+  },
+  fab: {
     position: 'absolute',
-    bottom: 80,
+    bottom: 30,
     right: 30,
     backgroundColor: '#007AFF',
     width: 60,
@@ -71,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 5,
   },
-  buttonText: {
+  fabText: {
     color: '#fff',
     fontSize: 30,
     fontWeight: 'bold',

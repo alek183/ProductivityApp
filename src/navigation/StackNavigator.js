@@ -7,22 +7,26 @@ import Timer from "../screens/Timer";
 
 const Stack = createStackNavigator();
 
-// Prihvatamo tasks i addTask iz App.js
-const MainStackNavigator = ({ tasks, addTask }) => (
+const MainStackNavigator = ({ tasks, addTask, deleteTask, toggleTaskStatus }) => (
     <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
 
-        {/* Ekran za listu - šaljemo mu listu taskova */}
         <Stack.Screen name="Tasks">
-          {(props) => <Tasks {...props} tasks={tasks}/>}
+          {(props) => (
+            <Tasks 
+              {...props} 
+              tasks={tasks} 
+              deleteTask={deleteTask} 
+              toggleTaskStatus={toggleTaskStatus} 
+            />
+          )}
         </Stack.Screen>
 
-        {/* Ekran za dodavanje - šaljemo mu funkciju za dodavanje */}
         <Stack.Screen name="AddTask">
-          {(props) => <AddTask {...props} addTask={addTask}/>}
+          {(props) => <AddTask {...props} addTask={addTask} />}
         </Stack.Screen>
 
-        <Stack.Screen name="Timer" component={Timer}/>
+        <Stack.Screen name="Timer" component={Timer} />
     </Stack.Navigator>
 );
 

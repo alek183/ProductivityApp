@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 const AddTask = ({ navigation, addTask }) => { 
-  const [text, setText] = useState(''); // Lokalni state za ono što kucaš
+  const [text, setText] = useState(''); 
 
   const handleSave = () => {
     if (text.length > 0) {
-      addTask(text); // Pozivamo funkciju iz App.js
-      setText('');   // Čistimo polje
-      navigation.navigate('Tasks'); // Vraćamo se na listu
+      addTask(text); 
+      setText('');   
+      navigation.navigate('Tasks'); 
     }
   };
 
@@ -16,7 +16,7 @@ const AddTask = ({ navigation, addTask }) => {
     <View style={styles.container}>
       <Text style={styles.header}>New Task</Text>
 
-      <TextInput
+      <TextInput 
         style={styles.input}
         placeholder="What do you want to do?"
         value={text}
