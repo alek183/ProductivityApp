@@ -11,13 +11,7 @@ const MainStackNavigator = ({ tasks, addTask, deleteTask }) => (
     <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Tasks">
-          {(props) => (
-            <Tasks 
-              {...props} 
-              tasks={tasks} 
-              deleteTask={deleteTask} 
-            />
-          )}
+          {(props) => <Tasks {...props} tasks={tasks} deleteTask={deleteTask} />}
         </Stack.Screen>
         <Stack.Screen name="AddTask">
           {(props) => <AddTask {...props} addTask={addTask} />}

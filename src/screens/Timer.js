@@ -1,11 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Vibration } from 'react-native';
+import { Audio } from 'expo-av';
 
 const Timer = () => {
   const [minInput, setMinInput] = useState('25');
   const [secInput, setSecInput] = useState('00');
   const [secondsLeft, setSecondsLeft] = useState(1500);
   const [isActive, setIsActive] = useState(false);
+  const [sound, setSound] = useState(null);
+
+  async function playSound() {
+    try {
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        require('../components/loud_alarm.mp3'),
+        { shouldPlay: true, isLooping: true }
+      );
+      
+      setSound(newSound);
+
+      setIsActive(false); 
+      Vibration.vibrate([500, 500, 500], true);
+    } catch (error) {
+      console.log("Error with sound:", error);
+      setIsActive(false);
+    }
+  }
+
+  async function stopSound() {
+    if (sound) {
+      await sound.stopAsync();
+      await sound.unloadAsync();
+      setSound(null);
+    }
+    Vibration.cancel();
+    updateSeconds(minInput, secInput);
+  }
 
   useEffect(() => {
     let interval = null;
@@ -13,9 +42,10 @@ const Timer = () => {
       interval = setInterval(() => {
         setSecondsLeft((prev) => prev - 1);
       }, 1000);
-    } else if (secondsLeft === 0) {
-      setIsActive(false);
+    } else if (secondsLeft === 0 && isActive) {
+
       clearInterval(interval);
+      playSound();
     } else {
       clearInterval(interval);
     }
@@ -29,12 +59,12 @@ const Timer = () => {
 
   const handleMinChange = (text) => {
     setMinInput(text);
-    updateSeconds(text, secInput);
+    if (!isActive && !sound) updateSeconds(text, secInput);
   };
 
   const handleSecChange = (text) => {
     setSecInput(text);
-    updateSeconds(minInput, text);
+    if (!isActive && !sound) updateSeconds(minInput, text);
   };
 
   const formatTime = (totalSeconds) => {
@@ -43,8 +73,17 @@ const Timer = () => {
     return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const toggleTimer = () => {
+    if (sound) {
+      stopSound();
+    } else {
+      setIsActive(!isActive);
+    }
+  };
+
   const resetTimer = () => {
     setIsActive(false);
+    stopSound();
     updateSeconds(minInput, secInput);
   };
 
@@ -84,11 +123,20 @@ const Timer = () => {
 
       <View style={styles.buttonRow}>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: isActive ? '#FF3B30' : '#4CD964' }]}
-          onPress={() => setIsActive(!isActive)}
+          style={[
+            styles.button,
+            { 
+              backgroundColor: sound 
+                ? '#FF3B30' 
+                : (isActive || (secondsLeft === 0 && isActive)) 
+                  ? '#FF9500' 
+                  : '#4CD964' 
+            }
+          ]}
+          onPress={toggleTimer}
         >
           <Text style={styles.buttonText}>
-            {isActive ? 'Pause' : 'Start'}
+            {sound ? 'Stop' : (isActive ? 'Pause' : 'Start')}
           </Text>
         </TouchableOpacity>
 
@@ -108,10 +156,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
-    marginTop: -90,
+    marginBottom: 20,
     color: '#333',
   },
   inputWrapper: {
@@ -126,7 +173,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: '#666',
-    marginBottom: -5,
+    marginBottom: 5,
   },
   input: {
     borderBottomWidth: 2,
@@ -156,6 +203,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     gap: 20,
+    marginBottom: 120
   },
   button: {
     paddingVertical: 15,

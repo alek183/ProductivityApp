@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainStackNavigator from './src/navigation/StackNavigator';
+import FlashMessage from "react-native-flash-message";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -52,6 +53,7 @@ export default function App() {
         addTask={addTask} 
         deleteTask={deleteTask} 
       />
+      <FlashMessage position="top" />
     </NavigationContainer>
   );
 }
