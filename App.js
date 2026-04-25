@@ -9,12 +9,12 @@ export default function App() {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const savedTasks = await AsyncStorage.getItem('@task_data');
+        const savedTasks = await AsyncStorage.getItem('@task_list_data');
         if (savedTasks !== null) {
           setTasks(JSON.parse(savedTasks));
         }
       } catch (e) {
-        console.error("Failed to load tasks", e);
+        console.error(e);
       }
     };
     loadTasks();
@@ -24,30 +24,25 @@ export default function App() {
     const saveTasks = async () => {
       try {
         const jsonValue = JSON.stringify(tasks);
-        await AsyncStorage.setItem('@task_data', jsonValue);
+        await AsyncStorage.setItem('@task_list_data', jsonValue);
       } catch (e) {
-        console.error("Failed to save tasks", e);
+        console.error(e);
       }
     };
     saveTasks();
   }, [tasks]);
 
-  // Add
-  const addTask = (text, Date) => {
-    const newTask = { id: Math.random().toString(), title: text, dueDate: Date, completed: false };
+  const addTask = (title, date) => {
+    const newTask = { 
+      id: Math.random().toString(), 
+      title: title, 
+      date: date || 'No date'
+    };
     setTasks([...tasks, newTask]);
   };
 
-  // Delete
   const deleteTask = (id) => {
     setTasks(tasks.filter(task => task.id !== id));
-  };
-
-  // Update 
-  const toggleTaskStatus = (id) => {
-    setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
   };
 
   return (
@@ -56,7 +51,6 @@ export default function App() {
         tasks={tasks} 
         addTask={addTask} 
         deleteTask={deleteTask} 
-        toggleTaskStatus={toggleTaskStatus} 
       />
     </NavigationContainer>
   );

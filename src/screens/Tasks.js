@@ -1,38 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
-const Tasks = ({ navigation, tasks, deleteTask, toggleTaskStatus }) => {
+const Tasks = ({ navigation, tasks, deleteTask }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Tasks</Text>
-
+      <Text style={styles.header}>My Schedule</Text>
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.taskCard}>
-            {/* Click to Toggle Status */}
-            <TouchableOpacity 
-              style={styles.textContainer} 
-              onPress={() => toggleTaskStatus(item.id)}
-            >
-              <Text style={[
-                styles.taskText, 
-                item.completed && styles.completedText
-              ]}>
-                {item.title}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Click to Delete */}
+            <View style={styles.textContainer}>
+              <Text style={styles.taskTitle}>{item.title}</Text>
+              <Text style={styles.taskDate}>{item.date}</Text>
+            </View>
             <TouchableOpacity onPress={() => deleteTask(item.id)}>
               <Text style={styles.deleteButton}>✕</Text>
             </TouchableOpacity>
           </View>
         )}
       />
-
-      {/* Floating Action Button for Adding */}
       <TouchableOpacity 
         style={styles.fab} 
         onPress={() => navigation.navigate('AddTask')}
@@ -46,7 +33,7 @@ const Tasks = ({ navigation, tasks, deleteTask, toggleTaskStatus }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f8f9fa',
     paddingTop: 50,
   },
   header: {
@@ -58,50 +45,49 @@ const styles = StyleSheet.create({
   taskCard: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 16,
     marginVertical: 8,
-    marginHorizontal: 16,
-    borderRadius: 12,
+    marginHorizontal: 20,
+    borderRadius: 15,
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    elevation: 4,
   },
   textContainer: {
     flex: 1,
   },
-  taskText: {
+  taskTitle: {
     fontSize: 18,
+    fontWeight: '600',
     color: '#333',
   },
-  completedText: {
-    textDecorationLine: 'line-through',
-    color: '#aaa',
+  taskDate: {
+    fontSize: 14,
+    color: '#007AFF',
+    marginTop: 4,
   },
   deleteButton: {
     color: '#FF3B30',
     fontSize: 22,
     fontWeight: 'bold',
-    paddingLeft: 10,
+    padding: 5,
   },
   fab: {
     position: 'absolute',
     bottom: 30,
     right: 30,
     backgroundColor: '#007AFF',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
+    elevation: 8,
   },
   fabText: {
     color: '#fff',
-    fontSize: 30,
-    fontWeight: 'bold',
-  }
+    fontSize: 35,
+    fontWeight: '300',
+  },
 });
 
 export default Tasks;
