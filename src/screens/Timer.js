@@ -12,7 +12,7 @@ const Timer = ({ theme }) => {
   async function playSound() {
     try {
       const { sound: newSound } = await Audio.Sound.createAsync(
-        require('../components/loud_alarm.mp3'),
+        require('../components/alarm.mp3'),
         { shouldPlay: true, isLooping: true }
       );
       

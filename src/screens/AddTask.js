@@ -13,7 +13,7 @@ const AddTask = ({ navigation, addTask, theme }) => {
   const playSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('../components/freddy.mp3')
+        require('../components/notif.mp3')
       );
       await sound.playAsync();
     } catch (error) {
