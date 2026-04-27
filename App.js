@@ -1,44 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { View, ActivityIndicator } from 'react-native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MainStackNavigator from './src/navigation/StackNavigator';
 import FlashMessage from "react-native-flash-message";
+import { StatusBar } from 'expo-status-bar';
+import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+
+  // Učitavanje fontova
+  let [fontsLoaded] = useFonts({
+    'Roboto-Regular': Roboto_400Regular,
+    'Roboto-Bold': Roboto_700Bold,
+  });
+
+  const theme = {
+    isDarkMode,
+    bg: isDarkMode ? '#121212' : '#F8F9FA',
+    card: isDarkMode ? '#1E1E1E' : '#FFFFFF',
+    text: isDarkMode ? '#FFFFFF' : '#000000',
+    subText: isDarkMode ? '#A1A1A6' : '#666666',
+    border: isDarkMode ? '#333333' : '#EEEEEE',
+    primary: '#007AFF',
+  };
 
   useEffect(() => {
-    const loadTasks = async () => {
+    const loadData = async () => {
       try {
         const savedTasks = await AsyncStorage.getItem('@task_list_data');
-        if (savedTasks !== null) {
-          setTasks(JSON.parse(savedTasks));
-        }
-      } catch (e) {
-        console.error(e);
-      }
+        const savedTheme = await AsyncStorage.getItem('@is_dark_mode');
+        if (savedTasks !== null) setTasks(JSON.parse(savedTasks));
+        if (savedTheme !== null) setIsDarkMode(JSON.parse(savedTheme));
+      } catch (e) { console.error(e); }
     };
-    loadTasks();
+    loadData();
   }, []);
 
-  useEffect(() => {
-    const saveTasks = async () => {
-      try {
-        const jsonValue = JSON.stringify(tasks);
-        await AsyncStorage.setItem('@task_list_data', jsonValue);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    saveTasks();
-  }, [tasks]);
+  const toggleTheme = async () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    await AsyncStorage.setItem('@is_dark_mode', JSON.stringify(newMode));
+  };
 
   const addTask = (title, date) => {
-    const newTask = { 
-      id: Math.random().toString(), 
-      title: title, 
-      date: date || 'No date'
-    };
+    const newTask = { id: Math.random().toString(), title, date };
     setTasks([...tasks, newTask]);
   };
 
@@ -46,14 +54,28 @@ export default function App() {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
+  // Ako fontovi nisu učitani, prikaži loading krug
+  if (!fontsLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#121212' }}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
   return (
-    <NavigationContainer>
-      <MainStackNavigator 
-        tasks={tasks} 
-        addTask={addTask} 
-        deleteTask={deleteTask} 
-      />
-      <FlashMessage position="top" />
-    </NavigationContainer>
+    <View style={{ flex: 1, backgroundColor: theme.bg }}>
+      <NavigationContainer theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: theme.bg } }}>
+        <StatusBar style={isDarkMode ? "light" : "dark"} />
+        <MainStackNavigator 
+          tasks={tasks} 
+          addTask={addTask} 
+          deleteTask={deleteTask} 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+        />
+        <FlashMessage position="top" />
+      </NavigationContainer>
+    </View>
   );
 }

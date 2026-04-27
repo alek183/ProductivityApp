@@ -4,7 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { showMessage } from "react-native-flash-message";
 import { Audio } from 'expo-av';
 
-const AddTask = ({ navigation, addTask }) => {
+const AddTask = ({ navigation, addTask, theme }) => {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
@@ -43,7 +43,7 @@ const AddTask = ({ navigation, addTask }) => {
             message: title,
             description: `${timeString}`,
             type: "info",
-            backgroundColor: "#007AFF",
+            backgroundColor: theme.primary,
             color: "#ffffff",
             duration: 7000,
             floating: true,
@@ -65,25 +65,38 @@ const AddTask = ({ navigation, addTask }) => {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <Text style={styles.header}>Add New Task</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"} 
+      style={[styles.container, { backgroundColor: theme.bg }]}
+    >
+      <Text style={[styles.header, { color: theme.text }]}>Add New Task</Text>
+      
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Task Name</Text>
+        <Text style={[styles.label, { color: theme.primary }]}>Task Name</Text>
         <TextInput 
-          style={styles.input} 
+          style={[styles.input, { color: theme.text, borderBottomColor: theme.card }]} 
           placeholder="What's on your mind today?" 
+          placeholderTextColor={theme.subText}
           value={title} 
           onChangeText={setTitle} 
         />
         
-        <Text style={styles.label}>Due Date & Time</Text>
+        <Text style={[styles.label, { color: theme.primary }]}>Due Date & Time</Text>
         <View style={styles.row}>
-          <TouchableOpacity style={styles.datePickerButton} onPress={() => { setShow(true); setMode('date'); }}>
-            <Text style={styles.datePickerText}>{date.toLocaleDateString('de-DE')}</Text>
+          <TouchableOpacity 
+            style={[styles.datePickerButton, { borderBottomColor: theme.card }]} 
+            onPress={() => { setShow(true); setMode('date'); }}
+          >
+            <Text style={[styles.datePickerText, { color: theme.text }]}>
+              {date.toLocaleDateString('de-DE')}
+            </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.datePickerButton} onPress={() => { setShow(true); setMode('time'); }}>
-            <Text style={styles.datePickerText}>
+          <TouchableOpacity 
+            style={[styles.datePickerButton, { borderBottomColor: theme.card }]} 
+            onPress={() => { setShow(true); setMode('time'); }}
+          >
+            <Text style={[styles.datePickerText, { color: theme.text }]}>
               {date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}
             </Text>
           </TouchableOpacity>
@@ -96,10 +109,15 @@ const AddTask = ({ navigation, addTask }) => {
             is24Hour={true}
             display="default" 
             onChange={onChange} 
+            themeVariant={theme.isDarkMode ? "dark" : "light"}
           />
         )}
       </View>
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+
+      <TouchableOpacity 
+        style={[styles.saveButton, { backgroundColor: theme.primary }]} 
+        onPress={handleSave}
+      >
         <Text style={styles.saveButtonText}>Create Task</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
@@ -107,16 +125,55 @@ const AddTask = ({ navigation, addTask }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 30, backgroundColor: '#fff', justifyContent: 'center' },
-  header: { fontSize: 36, fontWeight: 'bold', marginBottom: 40, textAlign: 'center', marginTop: -60 },
-  inputContainer: { marginBottom: 30 },
-  label: { fontSize: 14, color: '#007AFF', fontWeight: 'bold', marginBottom: 5 },
-  input: { borderBottomWidth: 2, borderBottomColor: '#eee', fontSize: 18, marginBottom: 25, paddingVertical: 8 },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
-  datePickerButton: { paddingVertical: 12, borderBottomWidth: 2, borderBottomColor: '#eee', flex: 0.45, alignItems: 'center' },
-  datePickerText: { fontSize: 16, color: '#333' },
-  saveButton: { backgroundColor: '#007AFF', padding: 18, borderRadius: 15, alignItems: 'center' },
-  saveButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  container: { 
+    flex: 1, 
+    padding: 30, 
+    justifyContent: 'center' 
+  },
+  header: { 
+    fontSize: 36, 
+    fontWeight: 'bold', 
+    marginBottom: 40, 
+    textAlign: 'center', 
+    marginTop: -60 
+  },
+  inputContainer: { 
+    marginBottom: 30 
+  },
+  label: { 
+    fontSize: 14, 
+    fontWeight: 'bold', 
+    marginBottom: 5 
+  },
+  input: { 
+    borderBottomWidth: 2, 
+    fontSize: 18, 
+    marginBottom: 25, 
+    paddingVertical: 8 
+  },
+  row: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between' 
+  },
+  datePickerButton: { 
+    paddingVertical: 12, 
+    borderBottomWidth: 2, 
+    flex: 0.45, 
+    alignItems: 'center' 
+  },
+  datePickerText: { 
+    fontSize: 16 
+  },
+  saveButton: { 
+    padding: 18, 
+    borderRadius: 15, 
+    alignItems: 'center' 
+  },
+  saveButtonText: { 
+    color: '#fff', 
+    fontSize: 18, 
+    fontWeight: 'bold' 
+  },
 });
 
 export default AddTask;

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Keyboard, Vibration } from 'react-native';
 import { Audio } from 'expo-av';
 
-const Timer = () => {
-  const [minInput, setMinInput] = useState('25');
+const Timer = ({ theme }) => {
+  const [minInput, setMinInput] = useState('05');
   const [secInput, setSecInput] = useState('00');
-  const [secondsLeft, setSecondsLeft] = useState(1500);
+  const [secondsLeft, setSecondsLeft] = useState(300);
   const [isActive, setIsActive] = useState(false);
   const [sound, setSound] = useState(null);
 
@@ -17,7 +17,6 @@ const Timer = () => {
       );
       
       setSound(newSound);
-
       setIsActive(false); 
       Vibration.vibrate([500, 500, 500], true);
     } catch (error) {
@@ -43,7 +42,6 @@ const Timer = () => {
         setSecondsLeft((prev) => prev - 1);
       }, 1000);
     } else if (secondsLeft === 0 && isActive) {
-
       clearInterval(interval);
       playSound();
     } else {
@@ -88,37 +86,42 @@ const Timer = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Focus Timer</Text>
+    <View style={[styles.container, { backgroundColor: theme.bg }]}>
+      <Text style={[styles.title, { color: theme.text }]}>Focus Timer</Text>
 
       <View style={styles.inputWrapper}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Min:</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>Min:</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: theme.text, borderBottomColor: theme.primary }]}
             keyboardType="number-pad"
             value={minInput}
             onChangeText={handleMinChange}
             onBlur={Keyboard.dismiss}
             maxLength={2}
+            placeholderTextColor={theme.subText}
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Sec:</Text>
+          <Text style={[styles.label, { color: theme.subText }]}>Sec:</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, { color: theme.text, borderBottomColor: theme.primary }]}
             keyboardType="number-pad"
             value={secInput}
             onChangeText={handleSecChange}
             onBlur={Keyboard.dismiss}
             maxLength={2}
+            placeholderTextColor={theme.subText}
           />
         </View>
       </View>
 
-      <View style={styles.timerCircle}>
-        <Text style={styles.timeText}>{formatTime(secondsLeft)}</Text>
+      <View style={[styles.timerCircle, { 
+        borderColor: isActive ? '#FF9500' : theme.primary,
+        backgroundColor: theme.card 
+      }]}>
+        <Text style={[styles.timeText, { color: theme.text }]}>{formatTime(secondsLeft)}</Text>
       </View>
 
       <View style={styles.buttonRow}>
@@ -128,7 +131,7 @@ const Timer = () => {
             { 
               backgroundColor: sound 
                 ? '#FF3B30' 
-                : (isActive || (secondsLeft === 0 && isActive)) 
+                : (isActive) 
                   ? '#FF9500' 
                   : '#4CD964' 
             }
@@ -140,8 +143,11 @@ const Timer = () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.resetButton} onPress={resetTimer}>
-          <Text style={styles.resetButtonText}>Reset</Text>
+        <TouchableOpacity 
+          style={[styles.resetButton, { borderColor: theme.border }]} 
+          onPress={resetTimer}
+        >
+          <Text style={[styles.resetButtonText, { color: theme.subText }]}>Reset</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -151,7 +157,6 @@ const Timer = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -159,7 +164,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: '#333',
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -172,17 +176,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 5,
   },
   input: {
     borderBottomWidth: 2,
-    borderBottomColor: '#007AFF',
     fontSize: 20,
     width: 50,
     textAlign: 'center',
     paddingBottom: 5,
-    color: '#333',
     fontWeight: 'bold',
   },
   timerCircle: {
@@ -190,20 +191,24 @@ const styles = StyleSheet.create({
     height: 250,
     borderRadius: 125,
     borderWidth: 10,
-    borderColor: '#007AFF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 50,
+    // Sjena za krug
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   timeText: {
     fontSize: 60,
     fontWeight: 'bold',
-    color: '#333',
   },
   buttonRow: {
     flexDirection: 'row',
     gap: 20,
-    marginBottom: 120
+    marginBottom: 60
   },
   button: {
     paddingVertical: 15,
@@ -222,12 +227,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 30,
     borderWidth: 2,
-    borderColor: '#eee',
     minWidth: 120,
     alignItems: 'center',
   },
   resetButtonText: {
-    color: '#888',
     fontSize: 18,
     fontWeight: 'bold',
   },
