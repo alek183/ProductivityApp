@@ -11,7 +11,6 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  // Učitavanje fontova
   let [fontsLoaded] = useFonts({
     'Roboto-Regular': Roboto_400Regular,
     'Roboto-Bold': Roboto_700Bold,
@@ -54,7 +53,7 @@ export default function App() {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  // Ako fontovi nisu učitani, prikaži loading krug
+
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', backgroundColor: '#121212' }}>

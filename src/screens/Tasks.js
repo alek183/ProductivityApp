@@ -24,8 +24,7 @@ const Tasks = ({ navigation, tasks, deleteTask, theme }) => {
           <Text style={[styles.emptyText, { color: theme.subText }]}>No tasks yet!</Text>
         }
       />
-
-      {/* FAB Dugme - Koristi primarnu plavu boju */}
+      
       <TouchableOpacity 
         style={[styles.fab, { backgroundColor: theme.primary, shadowColor: theme.primary }]} 
         onPress={() => navigation.navigate('AddTask')}
@@ -55,7 +54,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 20, 
     borderRadius: 15, 
     alignItems: 'center',
-    // Sjenka kartice
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -86,7 +84,7 @@ const styles = StyleSheet.create({
   },
   fab: { 
     position: 'absolute', 
-    bottom: 40, // Malo podignuto od dna
+    bottom: 40, 
     right: 30, 
     width: 65, 
     height: 65, 
